@@ -1,0 +1,9 @@
+{
+  "city": "London",
+  "country": "UK",
+  "temperature": 18.5,
+  "condition": "Partly Cloudy",
+  "humidity": 72,
+  "windSpeed": 12.4,
+  "icon": "partly-cloudy"
+}
