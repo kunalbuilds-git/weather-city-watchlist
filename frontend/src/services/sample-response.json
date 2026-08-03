@@ -1,0 +1,20 @@
+{
+  "id": "city_001",
+  "location": {
+    "city": "London",
+    "country": "UK"
+  },
+  "weather": {
+    "temperature": {
+      "value": 25,
+      "unit": "C"
+    },
+    "condition": "Sunny",
+    "humidity": 72,
+    "wind": {
+      "speed": 12.4,
+      "unit": "km/h"
+    }
+  },
+  "updatedAt": "2026-08-03T12:00:00Z"
+}
