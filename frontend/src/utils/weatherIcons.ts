@@ -23,3 +23,9 @@ export const weatherIcons: Record<string, string> = {
 
   windy: "🌪️",
 };
+
+// Returns the correct icon or a fallback
+export function getWeatherIcon(condition: string): string {
+  const key = condition.toLowerCase();
+  return weatherIcons[key] || "❓";
+}
