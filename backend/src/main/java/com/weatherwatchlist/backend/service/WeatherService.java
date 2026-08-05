@@ -1,5 +1,8 @@
 package com.weatherwatchlist.backend.service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 
 import com.weatherwatchlist.backend.exception.CityNotFoundException;
@@ -11,47 +14,53 @@ import com.weatherwatchlist.backend.model.WeatherResponse;
 @Service
 public class WeatherService {
 
-    public WeatherResponse getWeather(String city) {
+    private final Map<String, WeatherResponse> weatherData = new HashMap<>();
 
-    Location location;
-    Temperature temperature;
-    Weather weather;
+    public WeatherService() {
 
-    if (city.equalsIgnoreCase("Tokyo")) {
-
-        location = new Location("Tokyo", "Japan");
-        temperature = new Temperature(30, "C");
-
-        weather = new Weather(
-                temperature,
-                "Cloudy",
-                68,
-                10.5,
-                "km/h"
+        // Tokyo
+        weatherData.put(
+                "tokyo",
+                new WeatherResponse(
+                        "city_001",
+                        new Location("Tokyo", "Japan"),
+                        new Weather(
+                                new Temperature(30, "C"),
+                                "Cloudy",
+                                68,
+                                10.5,
+                                "km/h"
+                        ),
+                        "2026-08-05T10:00:00Z"
+                )
         );
 
-    } else if (city.equalsIgnoreCase("Paris")) {
-
-        location = new Location("Paris", "France");
-        temperature = new Temperature(21, "C");
-
-        weather = new Weather(
-                temperature,
-                "Rainy",
-                80,
-                18.2,
-                "km/h"
+        // Paris
+        weatherData.put(
+                "paris",
+                new WeatherResponse(
+                        "city_002",
+                        new Location("Paris", "France"),
+                        new Weather(
+                                new Temperature(21, "C"),
+                                "Rainy",
+                                80,
+                                18.2,
+                                "km/h"
+                        ),
+                        "2026-08-05T10:00:00Z"
+                )
         );
-
-    } else {
-       throw new CityNotFoundException(city);
     }
 
-    return new WeatherResponse(
-            "city_001",
-            location,
-            weather,
-            "2026-08-05T10:00:00Z"
-    );
+    public WeatherResponse getWeather(String city) {
+
+        WeatherResponse response = weatherData.get(city.toLowerCase());
+
+        if (response == null) {
+            throw new CityNotFoundException(city);
+        }
+
+        return response;
     }
 }
