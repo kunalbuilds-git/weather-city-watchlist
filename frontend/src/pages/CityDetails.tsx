@@ -1,30 +1,34 @@
-import sampleResponse from "../services/sample-response.json";
+import { useParams } from "react-router-dom";
+import { useWeather } from "../hooks/useWeather";
+import { useEffect } from "react";
 import { getWeatherIcon } from "../utils/weatherIcons";
 
 export default function CityDetails() {
-  const data = { // JSON fields mapped correctly to the data object
-    city: sampleResponse.location.city,
-    country: sampleResponse.location.country,
-    temperature: sampleResponse.weather.temperature.value,
-    condition: sampleResponse.weather.condition,
-    humidity: sampleResponse.weather.humidity,
-    windSpeed: sampleResponse.weather.wind.speed,
-    windUnit: sampleResponse.weather.wind.unit,
-    updatedAt: sampleResponse.updatedAt,
-  };
+  const { city } = useParams(); // /city-details/:city
+  const { weather, loading, error, fetchWeather } = useWeather();
+
+  useEffect(() => {
+    if (city) {
+      fetchWeather(city.trim().toLowerCase());
+    }
+  }, [city, fetchWeather]);
+
+  if (loading) return <p>Loading weather...</p>;
+  if (error) return <p>Error: {error}</p>;
+  if (!weather) return <p>No weather data available.</p>;
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md space-y-4">
       <h2 className="text-2xl font-bold flex items-center gap-2">
-        {data.city}, {data.country}
-        <span className="text-3xl">{getWeatherIcon(data.condition)}</span>
+        {weather.city}, {weather.country}
+        <span className="text-3xl">{getWeatherIcon(weather.condition)}</span>
       </h2>
 
-      <p><strong>Temperature:</strong> {data.temperature}°C</p>
-      <p><strong>Condition:</strong> {data.condition}</p>
-      <p><strong>Humidity:</strong> {data.humidity}%</p>
-      <p><strong>Wind:</strong> {data.windSpeed} {data.windUnit}</p>
-      <p><strong>Updated:</strong> {data.updatedAt}</p>
+      <p><strong>Temperature:</strong> {weather.temperature}°C</p>
+      <p><strong>Condition:</strong> {weather.condition}</p>
+      <p><strong>Humidity:</strong> {weather.humidity}%</p>
+      <p><strong>Wind:</strong> {weather.windSpeed} {weather.windUnit}</p>
+      <p><strong>Updated:</strong> {weather.updatedAt}</p>
     </div>
   );
 }

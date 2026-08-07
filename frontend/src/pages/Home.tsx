@@ -3,10 +3,11 @@ import React, { useState } from 'react';
 import CityCard from '../components/CityCard';
 import WeatherDetails from '../components/WeatherDetails';
 import { getWeatherByCity } from '../services/weatherService';
+import type { Weather } from '../types/Weather';
 
 export default function Home() {
 
-    const [weather, setWeather] = useState({
+    const [weather, setWeather] = useState<Weather>({
         city: "",
         country: "",
         temperature: 0,
@@ -17,15 +18,20 @@ export default function Home() {
         updatedAt: ""
     });
 
+    const [cityInput, setCityInput] = useState("");
+
     const inputHandleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setWeather(prev => ({
-            ...prev,
-            city: e.target.value
-        }));
+        setCityInput(e.target.value);
     };
 
     const handleSearch = async () => {
-        const data = await getWeatherByCity(weather.city);
+        const trimmedCity = cityInput.trim();
+
+        if (!trimmedCity) {
+            return;
+        }
+
+        const data = await getWeatherByCity(trimmedCity);
         setWeather(data);
     };
 
@@ -40,6 +46,8 @@ export default function Home() {
             windUnit: "",
             updatedAt: ""
         });
+
+        setCityInput("");
     };
 
     return (
@@ -68,7 +76,7 @@ export default function Home() {
                 <div className="space-y-4">
                     <input
                         type="text"
-                        value={weather.city}
+                        value={cityInput}
                         onChange={inputHandleChange}
                         placeholder="Enter city name"
                         className="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
