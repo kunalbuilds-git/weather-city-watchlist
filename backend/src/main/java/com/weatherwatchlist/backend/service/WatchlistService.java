@@ -2,35 +2,31 @@ package com.weatherwatchlist.backend.service;
 
 import java.util.HashMap;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class WatchlistService {
 
     private final HashMap<String, String> watchlist;
 
     public WatchlistService() {
-        watchlist = new HashMap<>();
+        this.watchlist = new HashMap<>();
     }
 
-    // Add a city
-    public void addCity(String city) {
-        watchlist.put(city, "saved");
-    }
-
-    // Get all saved cities
-    public HashMap<String, String> getCities() {
+    public HashMap<String, String> getWatchlist() {
         return watchlist;
     }
 
-    // Remove a city
-    public boolean removeCity(String city) {
-        if (watchlist.containsKey(city)) {
-            watchlist.remove(city);
-            return true;
-        }
-
-        return false;
+    public HashMap<String, String> addCity(String city) {
+        watchlist.put(city, "saved");
+        return watchlist;
     }
 
-    // Check whether a city is already saved
+    public HashMap<String, String> removeCity(String city) {
+        watchlist.remove(city);
+        return watchlist;
+    }
+
     public boolean containsCity(String city) {
         return watchlist.containsKey(city);
     }
