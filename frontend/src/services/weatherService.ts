@@ -17,8 +17,8 @@ export async function getWeatherByCity(city: string): Promise<Weather> {
   try {
     const normalizedCity = city.trim().toLowerCase();
 
-    // Use a relative URL so the Vite dev server can proxy the request to the Spring Boot backend.
-    // This avoids the browser's cross-origin fetch failure during local development.
+    // Use a relative URL so the Vite dev server can proxy the request to the Spring Boot backend
+    // This avoids the browser's cross-origin fetch failure during local development
     const response = await fetch(
       `/api/weather?city=${encodeURIComponent(normalizedCity)}`
     );
