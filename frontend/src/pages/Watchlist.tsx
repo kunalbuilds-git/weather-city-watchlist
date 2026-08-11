@@ -4,13 +4,19 @@ import { getWeatherByCity } from "../services/weatherService";
 import type { Weather } from "../types/Weather";
 
 export default function Watchlist() {
-  const { watchlist, removeCity } = useWatchlist();
+  const { watchlist, loading: watchlistLoading, removeCity } = useWatchlist();
   const [weatherList, setWeatherList] = useState<Weather[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loadingWeather, setLoadingWeather] = useState(false);
 
+  // Load weather for each city in watchlist
   useEffect(() => {
-    async function loadAll() {
-      setLoading(true);
+    async function loadAllWeather() {
+      if (watchlist.length === 0) {
+        setWeatherList([]);
+        return;
+      }
+
+      setLoadingWeather(true);
       const results: Weather[] = [];
 
       for (const city of watchlist) {
@@ -18,24 +24,25 @@ export default function Watchlist() {
           const data = await getWeatherByCity(city.name.trim().toLowerCase());
           results.push(data);
         } catch (error) {
-          console.error("Failed to fetch:", city.name, error);
+          console.error("Failed to fetch weather for:", city.name, error);
         }
       }
 
       setWeatherList(results);
-      setLoading(false);
+      setLoadingWeather(false);
     }
 
-    loadAll();
+    loadAllWeather();
   }, [watchlist]);
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md space-y-4">
       <h2 className="text-2xl font-bold">Your Watchlist</h2>
 
-      {loading && <p>Loading cities...</p>}
+      {watchlistLoading && <p>Loading watchlist...</p>}
+      {loadingWeather && <p>Loading weather...</p>}
 
-      {!loading && weatherList.length === 0 && (
+      {!watchlistLoading && weatherList.length === 0 && (
         <p className="text-gray-600">No cities added yet.</p>
       )}
 
