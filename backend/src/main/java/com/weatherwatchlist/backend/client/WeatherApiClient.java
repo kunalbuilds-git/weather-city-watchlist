@@ -7,16 +7,21 @@ import java.net.http.HttpResponse;
 
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.weatherwatchlist.backend.external.OpenMeteoResponse;
+
 @Component
 public class WeatherApiClient {
 
     private final HttpClient httpClient;
+    private final ObjectMapper objectMapper;
 
-    public WeatherApiClient() {
+    public WeatherApiClient(ObjectMapper objectMapper) {
         this.httpClient = HttpClient.newHttpClient();
+        this.objectMapper = objectMapper;
     }
 
-    public String getWeather(double latitude, double longitude) {
+    public OpenMeteoResponse getWeather(double latitude, double longitude) {
 
         String url = "https://api.open-meteo.com/v1/forecast"
                 + "?latitude=" + latitude
@@ -34,7 +39,10 @@ public class WeatherApiClient {
                     HttpResponse.BodyHandlers.ofString()
             );
 
-            return response.body();
+            return objectMapper.readValue(
+                    response.body(),
+                    OpenMeteoResponse.class
+            );
 
         } catch (Exception e) {
             throw new RuntimeException("Failed to fetch weather data", e);

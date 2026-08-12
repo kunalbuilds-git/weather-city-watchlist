@@ -3,16 +3,31 @@ package com.weatherwatchlist.backend;
 import org.junit.jupiter.api.Test;
 
 import com.weatherwatchlist.backend.client.WeatherApiClient;
+import com.weatherwatchlist.backend.external.OpenMeteoResponse;
 
 public class WeatherApiClientTest {
 
     @Test
     void testWeatherApiCall() {
 
-        WeatherApiClient client = new WeatherApiClient();
+        WeatherApiClient client = new WeatherApiClient(
+                new com.fasterxml.jackson.databind.ObjectMapper()
+        );
 
-        String response = client.getWeather(35.6895, 139.69171);
+        OpenMeteoResponse response = client.getWeather(
+                35.6895,
+                139.69171
+        );
 
-        System.out.println(response);
+        System.out.println("Latitude: " + response.getLatitude());
+        System.out.println("Longitude: " + response.getLongitude());
+        System.out.println("Temperature: "
+                + response.getCurrent().getTemperature());
+        System.out.println("Humidity: "
+                + response.getCurrent().getHumidity());
+        System.out.println("Weather code: "
+                + response.getCurrent().getWeatherCode());
+        System.out.println("Wind speed: "
+                + response.getCurrent().getWindSpeed());
     }
 }
