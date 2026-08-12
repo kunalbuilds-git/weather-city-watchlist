@@ -21,10 +21,10 @@ export default function Watchlist() {
 
       for (const city of watchlist) {
         try {
-          const data = await getWeatherByCity(city.name.trim().toLowerCase());
+          const data = await getWeatherByCity(city.location.city.trim().toLowerCase());
           results.push(data);
         } catch (error) {
-          console.error("Failed to fetch weather for:", city.name, error);
+          console.error("Failed to fetch weather for:", city.location.city, error);
         }
       }
 
