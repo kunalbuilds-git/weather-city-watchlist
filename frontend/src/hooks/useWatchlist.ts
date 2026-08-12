@@ -3,7 +3,13 @@ import type { City } from "../types/City";
 import { getWatchlist, addCityToWatchlist, removeCityFromWatchlist } from "../services/watchlistService";
 
 // Handles adding/removing cities from the watchlist (mock only)
-export function useWatchlist() {
+export function useWatchlist(): {
+  
+  watchlist: City[];
+  loading: boolean;
+  addCity: (name: string) => Promise<void>;
+  removeCity: (name: string) => Promise<void>;
+} {
   const [watchlist, setWatchlist] = useState<City[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -22,6 +28,17 @@ export function useWatchlist() {
     load();
   }, []);
 
+
+  // Add city to backend and update the state
+  async function addCity(name: string) {
+    try {
+      console.log("Adding city: ", name);
+      const updated = await addCityToWatchlist(name);
+      setWatchlist(updated);
+    } catch (error) {
+      console.error("Failed to add city: ", error);
+    }
+  }
 
   // Remove city from backend and update state
   async function removeCity(name: string) {
