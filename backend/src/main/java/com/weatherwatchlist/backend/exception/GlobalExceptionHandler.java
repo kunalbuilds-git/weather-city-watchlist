@@ -12,7 +12,19 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> handleCityNotFoundException(CityNotFoundException ex){
+    public Map<String, String> handleCityNotFoundException(
+            CityNotFoundException ex) {
+
+        return Map.of(
+                "error", ex.getMessage()
+        );
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleIllegalArgumentException(
+            IllegalArgumentException ex) {
+
         return Map.of(
                 "error", ex.getMessage()
         );
