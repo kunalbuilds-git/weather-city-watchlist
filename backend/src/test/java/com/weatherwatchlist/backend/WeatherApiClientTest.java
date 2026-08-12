@@ -3,7 +3,6 @@ package com.weatherwatchlist.backend;
 import org.junit.jupiter.api.Test;
 
 import com.weatherwatchlist.backend.client.WeatherApiClient;
-import com.weatherwatchlist.backend.external.OpenMeteoResponse;
 
 public class WeatherApiClientTest {
 

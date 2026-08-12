@@ -8,7 +8,7 @@ import java.net.http.HttpResponse;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.weatherwatchlist.backend.external.OpenMeteoResponse;
+import com.weatherwatchlist.backend.OpenMeteoResponse;
 
 @Component
 public class WeatherApiClient {

@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 
 import CityCard from '../components/CityCard';
 import WeatherDetails from '../components/WeatherDetails';
+
 import { getWeatherByCity } from '../services/weatherService';
 import type { Weather } from '../types/Weather';
+import { useWatchlist } from '../hooks/useWatchlist';
 
 export default function Home() {
 
@@ -19,6 +21,7 @@ export default function Home() {
     });
 
     const [cityInput, setCityInput] = useState("");
+    const { addCity } = useWatchlist();
 
     const inputHandleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setCityInput(e.target.value);
@@ -79,22 +82,37 @@ export default function Home() {
                         value={cityInput}
                         onChange={inputHandleChange}
                         placeholder="Enter city name"
-                        className="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-2 border rounded-md shadow-sm 
+                                    focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
 
                     <div className="flex gap-4">
                         <button
                             onClick={handleSearch}
-                            className="flex-1 bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
+                            className="flex-1 bg-blue-600 text-white py-2 rounded-md 
+                                    hover:bg-blue-700 transition"
                         >
                             Search
                         </button>
 
                         <button
                             onClick={handleReset}
-                            className="flex-1 bg-gray-300 text-gray-800 py-2 rounded-md hover:bg-gray-400 transition"
+                            className="flex-1 bg-gray-300 text-gray-800 py-2 rounded-md
+                                     hover:bg-gray-400 transition"
                         >
                             Reset
+                        </button>
+
+                        <button
+                            disabled={!weather.city}
+                            onClick={() => addCity(weather.city)}
+                            className={`flex-1 py-2 rounded-md transition 
+                                ${weather.city
+                                ? "bg-green-600 text-white hover:bg-green-700"
+                                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                }`}
+                        >
+                            Add to Watchlist
                         </button>
                     </div>
                 </div>

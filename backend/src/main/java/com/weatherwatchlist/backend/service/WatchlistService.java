@@ -1,33 +1,62 @@
 package com.weatherwatchlist.backend.service;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
+
+import com.weatherwatchlist.backend.model.Location;
+import com.weatherwatchlist.backend.model.WeatherResponse;
 
 @Service
 public class WatchlistService {
 
-    private final HashMap<String, String> watchlist;
+    private final List<WeatherResponse> watchlist;
 
     public WatchlistService() {
-        this.watchlist = new HashMap<>();
+        this.watchlist = new ArrayList<>();
     }
 
-    public HashMap<String, String> getWatchlist() {
+    public List<WeatherResponse> getWatchlist() {
         return watchlist;
     }
 
-    public HashMap<String, String> addCity(String city) {
-        watchlist.put(city, "saved");
+    public List<WeatherResponse> addCity(String city) {
+
+        if (containsCity(city)) {
+            return watchlist;
+        }
+
+        WeatherResponse weatherResponse = new WeatherResponse(
+                "watchlist_" + (watchlist.size() + 1),
+                new Location(city, ""),
+                null,
+                null
+        );
+
+        watchlist.add(weatherResponse);
+
         return watchlist;
     }
 
-    public HashMap<String, String> removeCity(String city) {
-        watchlist.remove(city);
+    public List<WeatherResponse> removeCity(String city) {
+
+        watchlist.removeIf(
+                weather -> weather.getLocation()
+                        .getCity()
+                        .equalsIgnoreCase(city)
+        );
+
         return watchlist;
     }
 
     public boolean containsCity(String city) {
-        return watchlist.containsKey(city);
+
+        return watchlist.stream()
+                .anyMatch(
+                        weather -> weather.getLocation()
+                                .getCity()
+                                .equalsIgnoreCase(city)
+                );
     }
 }
