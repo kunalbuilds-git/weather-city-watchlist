@@ -1,7 +1,9 @@
 package com.weatherwatchlist.backend.external;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OpenMeteoResponse {
 
     private double latitude;
@@ -33,6 +35,7 @@ public class OpenMeteoResponse {
         this.current = current;
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Current {
 
         private String time;

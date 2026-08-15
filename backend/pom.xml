@@ -9,7 +9,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>4.0.7</version>
-        <relativePath/>f
+        <relativePath/>
     </parent>
 
     <groupId>com.weatherwatchlist</groupId>
