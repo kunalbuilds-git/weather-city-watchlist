@@ -1,18 +1,21 @@
 package com.weatherwatchlist.backend.controller;
 
-import java.util.HashMap;
+import java.util.List;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.weatherwatchlist.backend.model.WeatherResponse;
 import com.weatherwatchlist.backend.service.WatchlistService;
 
 @RestController
-@RequestMapping("/watchlist")
+@RequestMapping("/api/watchlist")
+@CrossOrigin
 public class WatchlistController {
 
     private final WatchlistService watchlistService;
@@ -22,17 +25,21 @@ public class WatchlistController {
     }
 
     @GetMapping
-    public HashMap<String, String> getWatchlist() {
+    public List<WeatherResponse> getWatchlist() {
         return watchlistService.getWatchlist();
     }
 
-    @PostMapping("/{city}")
-    public HashMap<String, String> addCity(@PathVariable String city) {
+    @PostMapping("/add")
+    public List<WeatherResponse> addCity(
+            @RequestParam String city) {
+
         return watchlistService.addCity(city);
     }
 
-    @DeleteMapping("/{city}")
-    public HashMap<String, String> removeCity(@PathVariable String city) {
+    @DeleteMapping("/remove")
+    public List<WeatherResponse> removeCity(
+            @RequestParam String city) {
+
         return watchlistService.removeCity(city);
     }
 }
