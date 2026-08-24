@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.weatherwatchlist.backend.client.GeocodingApiClient;
+import com.weatherwatchlist.backend.client.GeocodingApiClient.LocationResult;
 import com.weatherwatchlist.backend.model.Location;
 import com.weatherwatchlist.backend.model.WeatherResponse;
 
@@ -12,9 +14,11 @@ import com.weatherwatchlist.backend.model.WeatherResponse;
 public class WatchlistService {
 
     private final List<WeatherResponse> watchlist;
+    private final GeocodingApiClient geocodingApiClient;
 
-    public WatchlistService() {
+    public WatchlistService(GeocodingApiClient geocodingApiClient) {
         this.watchlist = new ArrayList<>();
+        this.geocodingApiClient = geocodingApiClient;
     }
 
     public List<WeatherResponse> getWatchlist() {
@@ -27,9 +31,15 @@ public class WatchlistService {
             return watchlist;
         }
 
+        LocationResult locationResult =
+                geocodingApiClient.findCity(city);
+
         WeatherResponse weatherResponse = new WeatherResponse(
                 "watchlist_" + (watchlist.size() + 1),
-                new Location(city, ""),
+                new Location(
+                        locationResult.getCity(),
+                        locationResult.getCountry()
+                ),
                 null,
                 null
         );
