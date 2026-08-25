@@ -1,27 +1,46 @@
-Weather & City Watchlist
+# Weather & City Watchlist
 
-A collaborative full-stack application built with:
+A collaborative full-stack weather application built with React and Spring Boot.
 
-Frontend
+The project allows users to search for cities, view live weather data, and maintain a personal watchlist of saved cities.
+
+## Tech Stack
+
+### Frontend
 - React
 - TypeScript
 - Tailwind CSS
+- Vite
 
-Backend
+### Backend
 - Java
 - Spring Boot
+- Maven
+- REST APIs
+- Jackson
+- Java HttpClient
 
-Features
+### External APIs
+- Open-Meteo Geocoding API
+- Open-Meteo Weather API
+
+## Features
+
 - Search weather by city
-- Save favorite cities
-- Watchlist
-- REST API
-- Responsive UI
+- Convert city names into geographic coordinates
+- Fetch current weather data using latitude and longitude
+- Display temperature, humidity, weather code and wind speed
+- Add cities to a watchlist
+- Remove cities from a watchlist
+- Prevent duplicate cities
+- REST API communication between frontend and backend
+- CORS support for frontend-backend communication
+- JSON response mapping using Jackson
+- Backend API testing
 
-Project Structure
-frontend/
-backend/
+## Backend API
 
-Contributors
-- Kunal (Backend)
-- Yoichi (Frontend)
+### Weather
+
+```text
+GET /api/weather?city={city}
