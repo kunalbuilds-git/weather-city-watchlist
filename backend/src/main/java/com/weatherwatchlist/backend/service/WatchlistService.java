@@ -1,131 +1,51 @@
-package com.weatherwatchlist.backend.service;
+package com.weatherwatchlist.backend.controller;
 
-import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.weatherwatchlist.backend.client.GeocodingApiClient;
-import com.weatherwatchlist.backend.client.GeocodingApiClient.LocationResult;
-import com.weatherwatchlist.backend.client.WeatherApiClient;
-import com.weatherwatchlist.backend.external.OpenMeteoResponse;
-import com.weatherwatchlist.backend.model.Location;
-import com.weatherwatchlist.backend.model.Temperature;
-import com.weatherwatchlist.backend.model.Weather;
 import com.weatherwatchlist.backend.model.WeatherResponse;
+import com.weatherwatchlist.backend.service.WatchlistService;
 
-@Service
-public class WatchlistService {
+@RestController
+@RequestMapping("/api/watchlist")
+@CrossOrigin
+public class WatchlistController {
 
-    private final List<WeatherResponse> watchlist;
-    private final GeocodingApiClient geocodingApiClient;
-    private final WeatherApiClient weatherApiClient;
+    private final WatchlistService watchlistService;
 
-    public WatchlistService(
-            GeocodingApiClient geocodingApiClient,
-            WeatherApiClient weatherApiClient) {
-
-        this.watchlist = new ArrayList<>();
-        this.geocodingApiClient = geocodingApiClient;
-        this.weatherApiClient = weatherApiClient;
+    public WatchlistController(WatchlistService watchlistService) {
+        this.watchlistService = watchlistService;
     }
 
+    @GetMapping
     public List<WeatherResponse> getWatchlist() {
-        return watchlist;
+        return watchlistService.getWatchlist();
     }
 
-    public List<WeatherResponse> addCity(String city) {
+    @PostMapping("/add")
+    public List<WeatherResponse> addCity(
+            @RequestParam String city) {
 
-        if (containsCity(city)) {
-            return watchlist;
-        }
-
-        LocationResult locationResult =
-                geocodingApiClient.findCity(city);
-
-        OpenMeteoResponse weatherResult =
-                weatherApiClient.getWeather(
-                        locationResult.getLatitude(),
-                        locationResult.getLongitude()
-                );
-
-        OpenMeteoResponse.Current current =
-                weatherResult.getCurrent();
-
-        Weather weather = new Weather(
-                new Temperature(
-                        (int) Math.round(current.getTemperature()),
-                        "C"
-                ),
-                getWeatherCondition(current.getWeatherCode()),
-                current.getHumidity(),
-                current.getWindSpeed(),
-                "km/h"
-        );
-
-        WeatherResponse weatherResponse = new WeatherResponse(
-                "watchlist_" + (watchlist.size() + 1),
-                new Location(
-                        locationResult.getCity(),
-                        locationResult.getCountry()
-                ),
-                weather,
-                Instant.now().toString()
-        );
-
-        watchlist.add(weatherResponse);
-
-        return watchlist;
+        return watchlistService.addCity(city);
     }
 
-    public List<WeatherResponse> removeCity(String city) {
+    @DeleteMapping("/remove")
+    public List<WeatherResponse> removeCity(
+            @RequestParam String city) {
 
-        watchlist.removeIf(
-                weather -> weather.getLocation()
-                        .getCity()
-                        .equalsIgnoreCase(city)
-        );
-
-        return watchlist;
+        return watchlistService.removeCity(city);
     }
 
-    public boolean containsCity(String city) {
-
-        return watchlist.stream()
-                .anyMatch(
-                        weather -> weather.getLocation()
-                                .getCity()
-                                .equalsIgnoreCase(city)
-                );
-    }
-
-    private String getWeatherCondition(int weatherCode) {
-
-        if (weatherCode == 0) {
-            return "Clear";
-        }
-
-        if (weatherCode >= 1 && weatherCode <= 3) {
-            return "Cloudy";
-        }
-
-        if (weatherCode >= 51 && weatherCode <= 67) {
-            return "Rainy";
-        }
-
-        if (weatherCode >= 71 && weatherCode <= 77) {
-            return "Snowy";
-        }
-
-        if (weatherCode >= 80 && weatherCode <= 82) {
-            return "Rainy";
-        }
-
-        if (weatherCode >= 95) {
-            return "Thunderstorm";
-        }
-
-        return "Unknown";
+    @PutMapping("/refresh")
+    public List<WeatherResponse> refreshWeather() {
+        return watchlistService.refreshWeather();
     }
 }
