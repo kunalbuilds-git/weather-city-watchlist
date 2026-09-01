@@ -1,0 +1,3 @@
+com\weatherwatchlist\backend\WeatherApiClientTest.class
+com\weatherwatchlist\backend\BackendApplicationTests.class
+com\weatherwatchlist\backend\GeocodingApiClientTest.class

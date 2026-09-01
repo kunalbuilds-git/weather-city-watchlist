@@ -1,0 +1,17 @@
+C:\Users\Kunal\OneDrive\Documents\weather-city-watchlist\backend\src\main\java\com\weatherwatchlist\backend\BackendApplication.java
+C:\Users\Kunal\OneDrive\Documents\weather-city-watchlist\backend\src\main\java\com\weatherwatchlist\backend\client\GeocodingApiClient.java
+C:\Users\Kunal\OneDrive\Documents\weather-city-watchlist\backend\src\main\java\com\weatherwatchlist\backend\client\WeatherApiClient.java
+C:\Users\Kunal\OneDrive\Documents\weather-city-watchlist\backend\src\main\java\com\weatherwatchlist\backend\controller\HelloController.java
+C:\Users\Kunal\OneDrive\Documents\weather-city-watchlist\backend\src\main\java\com\weatherwatchlist\backend\controller\WatchlistController.java
+C:\Users\Kunal\OneDrive\Documents\weather-city-watchlist\backend\src\main\java\com\weatherwatchlist\backend\controller\WeatherController.java
+C:\Users\Kunal\OneDrive\Documents\weather-city-watchlist\backend\src\main\java\com\weatherwatchlist\backend\entity\WatchlistEntity.java
+C:\Users\Kunal\OneDrive\Documents\weather-city-watchlist\backend\src\main\java\com\weatherwatchlist\backend\exception\CityNotFoundException.java
+C:\Users\Kunal\OneDrive\Documents\weather-city-watchlist\backend\src\main\java\com\weatherwatchlist\backend\exception\GlobalExceptionHandler.java
+C:\Users\Kunal\OneDrive\Documents\weather-city-watchlist\backend\src\main\java\com\weatherwatchlist\backend\external\OpenMeteoResponse.java
+C:\Users\Kunal\OneDrive\Documents\weather-city-watchlist\backend\src\main\java\com\weatherwatchlist\backend\model\Location.java
+C:\Users\Kunal\OneDrive\Documents\weather-city-watchlist\backend\src\main\java\com\weatherwatchlist\backend\model\Temperature.java
+C:\Users\Kunal\OneDrive\Documents\weather-city-watchlist\backend\src\main\java\com\weatherwatchlist\backend\model\Weather.java
+C:\Users\Kunal\OneDrive\Documents\weather-city-watchlist\backend\src\main\java\com\weatherwatchlist\backend\model\WeatherResponse.java
+C:\Users\Kunal\OneDrive\Documents\weather-city-watchlist\backend\src\main\java\com\weatherwatchlist\backend\repository\WatchlistRepository.java
+C:\Users\Kunal\OneDrive\Documents\weather-city-watchlist\backend\src\main\java\com\weatherwatchlist\backend\service\WatchlistService.java
+C:\Users\Kunal\OneDrive\Documents\weather-city-watchlist\backend\src\main\java\com\weatherwatchlist\backend\service\WeatherService.java
