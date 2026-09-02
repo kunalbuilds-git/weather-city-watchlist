@@ -52,7 +52,9 @@ public class WatchlistService {
 
         WatchlistEntity entity = new WatchlistEntity(
                 locationResult.getCity(),
-                locationResult.getCountry()
+                locationResult.getCountry(),
+                locationResult.getLatitude(),
+                locationResult.getLongitude()
         );
 
         watchlistRepository.save(entity);
@@ -91,14 +93,9 @@ public class WatchlistService {
     private WeatherResponse toWeatherResponse(
             WatchlistEntity entity) {
 
-        LocationResult locationResult =
-                geocodingApiClient.findCity(
-                        entity.getCity()
-                );
-
         Weather weather = fetchWeather(
-                locationResult.getLatitude(),
-                locationResult.getLongitude()
+                entity.getLatitude(),
+                entity.getLongitude()
         );
 
         return new WeatherResponse(
