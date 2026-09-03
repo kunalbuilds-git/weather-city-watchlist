@@ -64,13 +64,8 @@ public class WatchlistService {
 
     public List<WeatherResponse> removeCity(String city) {
 
-        watchlistRepository.findAll()
-                .stream()
-                .filter(entity ->
-                        entity.getCity()
-                                .equalsIgnoreCase(city)
-                )
-                .forEach(watchlistRepository::delete);
+        watchlistRepository.findByCity(city)
+                .ifPresent(watchlistRepository::delete);
 
         return getWatchlist();
     }
@@ -82,12 +77,7 @@ public class WatchlistService {
 
     public boolean containsCity(String city) {
 
-        return watchlistRepository.findAll()
-                .stream()
-                .anyMatch(entity ->
-                        entity.getCity()
-                                .equalsIgnoreCase(city)
-                );
+        return watchlistRepository.findByCity(city).isPresent();
     }
 
     private WeatherResponse toWeatherResponse(
