@@ -48,4 +48,9 @@ public class WatchlistController {
     public List<WeatherResponse> refreshWeather() {
         return watchlistService.refreshWeather();
     }
+
+    @DeleteMapping("/clear")
+    public List<WeatherResponse> clearWatchlist() {
+        return watchlistService.clearWatchlist();
+    }
 }

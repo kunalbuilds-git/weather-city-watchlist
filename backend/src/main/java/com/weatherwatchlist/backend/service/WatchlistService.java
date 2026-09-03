@@ -75,6 +75,13 @@ public class WatchlistService {
         return getWatchlist();
     }
 
+    public List<WeatherResponse> clearWatchlist() {
+
+        watchlistRepository.deleteAll();
+
+        return getWatchlist();
+    }
+
     public boolean containsCity(String city) {
 
         return watchlistRepository.findByCity(city).isPresent();
