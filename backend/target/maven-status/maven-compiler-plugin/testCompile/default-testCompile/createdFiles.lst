@@ -1,5 +1,2 @@
 com\weatherwatchlist\backend\external\OpenMeteoResponse.class
 com\weatherwatchlist\backend\external\OpenMeteoResponse$Current.class
-com\weatherwatchlist\backend\WeatherApiClientTest.class
-com\weatherwatchlist\backend\BackendApplicationTests.class
-com\weatherwatchlist\backend\GeocodingApiClientTest.class
