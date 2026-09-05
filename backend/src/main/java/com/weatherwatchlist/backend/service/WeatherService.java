@@ -1,11 +1,14 @@
 package com.weatherwatchlist.backend.service;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.time.Instant;
 
 import org.springframework.stereotype.Service;
 
+import com.weatherwatchlist.backend.client.GeocodingApiClient;
+import com.weatherwatchlist.backend.client.GeocodingApiClient.LocationResult;
+import com.weatherwatchlist.backend.client.WeatherApiClient;
 import com.weatherwatchlist.backend.exception.CityNotFoundException;
+import com.weatherwatchlist.backend.external.OpenMeteoResponse;
 import com.weatherwatchlist.backend.model.Location;
 import com.weatherwatchlist.backend.model.Temperature;
 import com.weatherwatchlist.backend.model.Weather;
@@ -14,53 +17,89 @@ import com.weatherwatchlist.backend.model.WeatherResponse;
 @Service
 public class WeatherService {
 
-    private final Map<String, WeatherResponse> weatherData = new HashMap<>();
+    private final GeocodingApiClient geocodingApiClient;
+    private final WeatherApiClient weatherApiClient;
 
-    public WeatherService() {
+    public WeatherService(
+            GeocodingApiClient geocodingApiClient,
+            WeatherApiClient weatherApiClient) {
 
-        // Tokyo
-        weatherData.put(
-                "tokyo",
-                new WeatherResponse(
-                        "city_001",
-                        new Location("Tokyo", "Japan"),
-                        new Weather(
-                                new Temperature(30, "C"),
-                                "Cloudy",
-                                68,
-                                10.5,
-                                "km/h"
-                        ),
-                        "2026-08-05T10:00:00Z"
-                )
-        );
-
-        // Paris
-        weatherData.put(
-                "paris",
-                new WeatherResponse(
-                        "city_002",
-                        new Location("Paris", "France"),
-                        new Weather(
-                                new Temperature(21, "C"),
-                                "Rainy",
-                                80,
-                                18.2,
-                                "km/h"
-                        ),
-                        "2026-08-05T10:00:00Z"
-                )
-        );
+        this.geocodingApiClient = geocodingApiClient;
+        this.weatherApiClient = weatherApiClient;
     }
 
     public WeatherResponse getWeather(String city) {
 
-        WeatherResponse response = weatherData.get(city.toLowerCase());
+        try {
+            LocationResult locationResult = geocodingApiClient.findCity(city);
 
-        if (response == null) {
+            Weather weather = fetchWeather(
+                    locationResult.getLatitude(),
+                    locationResult.getLongitude()
+            );
+
+            return new WeatherResponse(
+                    "search_" + city.toLowerCase(),
+                    new Location(
+                            locationResult.getCity(),
+                            locationResult.getCountry()
+                    ),
+                    weather,
+                    Instant.now().toString()
+            );
+
+        } catch (Exception e) {
             throw new CityNotFoundException(city);
         }
+    }
 
-        return response;
+    private Weather fetchWeather(double latitude, double longitude) {
+
+        OpenMeteoResponse weatherResult = weatherApiClient.getWeather(
+                latitude,
+                longitude
+        );
+
+        OpenMeteoResponse.Current current = weatherResult.getCurrent();
+
+        return new Weather(
+                new Temperature(
+                        (int) Math.round(current.getTemperature()),
+                        "C"
+                ),
+                getWeatherCondition(current.getWeatherCode()),
+                current.getHumidity(),
+                current.getWindSpeed(),
+                "km/h"
+        );
+    }
+
+    private String getWeatherCondition(int weatherCode) {
+
+        if (weatherCode == 0) {
+            return "Clear";
+        }
+
+        if (weatherCode >= 1 && weatherCode <= 3) {
+            return "Cloudy";
+        }
+
+        if (weatherCode >= 51 && weatherCode <= 67) {
+            return "Rainy";
+        }
+
+        if (weatherCode >= 71 && weatherCode <= 77) {
+            return "Snowy";
+        }
+
+        if (weatherCode >= 80 && weatherCode <= 82) {
+            return "Rainy";
+        }
+
+        if (weatherCode >= 95) {
+            return "Thunderstorm";
+        }
+
+        return "Unknown";
     }
 }
