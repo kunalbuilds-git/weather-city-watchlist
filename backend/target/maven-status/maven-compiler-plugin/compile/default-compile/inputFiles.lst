@@ -6,6 +6,7 @@ C:\Users\Kunal\OneDrive\Documents\weather-city-watchlist\backend\src\main\java\c
 C:\Users\Kunal\OneDrive\Documents\weather-city-watchlist\backend\src\main\java\com\weatherwatchlist\backend\controller\WeatherController.java
 C:\Users\Kunal\OneDrive\Documents\weather-city-watchlist\backend\src\main\java\com\weatherwatchlist\backend\entity\WatchlistEntity.java
 C:\Users\Kunal\OneDrive\Documents\weather-city-watchlist\backend\src\main\java\com\weatherwatchlist\backend\exception\CityNotFoundException.java
+C:\Users\Kunal\OneDrive\Documents\weather-city-watchlist\backend\src\main\java\com\weatherwatchlist\backend\exception\ErrorResponse.java
 C:\Users\Kunal\OneDrive\Documents\weather-city-watchlist\backend\src\main\java\com\weatherwatchlist\backend\exception\GlobalExceptionHandler.java
 C:\Users\Kunal\OneDrive\Documents\weather-city-watchlist\backend\src\main\java\com\weatherwatchlist\backend\external\OpenMeteoResponse.java
 C:\Users\Kunal\OneDrive\Documents\weather-city-watchlist\backend\src\main\java\com\weatherwatchlist\backend\model\Location.java

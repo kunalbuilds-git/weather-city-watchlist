@@ -11,6 +11,7 @@ com\weatherwatchlist\backend\model\WeatherResponse.class
 com\weatherwatchlist\backend\client\GeocodingApiClient.class
 com\weatherwatchlist\backend\client\WeatherApiClient.class
 com\weatherwatchlist\backend\exception\GlobalExceptionHandler.class
+com\weatherwatchlist\backend\exception\ErrorResponse.class
 com\weatherwatchlist\backend\model\Temperature.class
 com\weatherwatchlist\backend\client\GeocodingApiClient$LocationResult.class
 com\weatherwatchlist\backend\repository\WatchlistRepository.class
