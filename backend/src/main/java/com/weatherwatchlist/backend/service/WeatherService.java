@@ -2,6 +2,8 @@ package com.weatherwatchlist.backend.service;
 
 import java.time.Instant;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.weatherwatchlist.backend.client.GeocodingApiClient;
@@ -17,6 +19,8 @@ import com.weatherwatchlist.backend.model.WeatherResponse;
 @Service
 public class WeatherService {
 
+    private static final Logger logger = LoggerFactory.getLogger(WeatherService.class);
+
     private final GeocodingApiClient geocodingApiClient;
     private final WeatherApiClient weatherApiClient;
 
@@ -30,13 +34,22 @@ public class WeatherService {
 
     public WeatherResponse getWeather(String city) {
 
+        logger.info("Searching for weather: {}", city);
+
         try {
             LocationResult locationResult = geocodingApiClient.findCity(city);
+            logger.debug("Found location: {} ({}) at {}, {}", 
+                    locationResult.getCity(), 
+                    locationResult.getCountry(),
+                    locationResult.getLatitude(),
+                    locationResult.getLongitude());
 
             Weather weather = fetchWeather(
                     locationResult.getLatitude(),
                     locationResult.getLongitude()
             );
+
+            logger.info("Successfully retrieved weather for: {}", city);
 
             return new WeatherResponse(
                     "search_" + city.toLowerCase(),
@@ -49,6 +62,7 @@ public class WeatherService {
             );
 
         } catch (Exception e) {
+            logger.error("Failed to get weather for city: {}", city, e);
             throw new CityNotFoundException(city);
         }
     }

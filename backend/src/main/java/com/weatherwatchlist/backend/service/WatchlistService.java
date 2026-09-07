@@ -3,6 +3,8 @@ package com.weatherwatchlist.backend.service;
 import java.time.Instant;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.weatherwatchlist.backend.client.GeocodingApiClient;
@@ -18,6 +20,8 @@ import com.weatherwatchlist.backend.repository.WatchlistRepository;
 
 @Service
 public class WatchlistService {
+
+    private static final Logger logger = LoggerFactory.getLogger(WatchlistService.class);
 
     private final WatchlistRepository watchlistRepository;
     private final GeocodingApiClient geocodingApiClient;
@@ -35,49 +39,75 @@ public class WatchlistService {
 
     public List<WeatherResponse> getWatchlist() {
 
-        return watchlistRepository.findAll()
+        logger.info("Fetching all cities from watchlist");
+        List<WeatherResponse> watchlist = watchlistRepository.findAll()
                 .stream()
                 .map(this::toWeatherResponse)
                 .toList();
+        logger.info("Retrieved {} cities from watchlist", watchlist.size());
+
+        return watchlist;
     }
 
     public List<WeatherResponse> addCity(String city) {
 
+        logger.info("Attempting to add city: {}", city);
+
         if (containsCity(city)) {
+            logger.warn("City {} already exists in watchlist", city);
             return getWatchlist();
         }
 
-        LocationResult locationResult =
-                geocodingApiClient.findCity(city);
+        try {
+            LocationResult locationResult = geocodingApiClient.findCity(city);
+            logger.debug("Found location for {}: ({}, {})", city, locationResult.getLatitude(), locationResult.getLongitude());
 
-        WatchlistEntity entity = new WatchlistEntity(
-                locationResult.getCity(),
-                locationResult.getCountry(),
-                locationResult.getLatitude(),
-                locationResult.getLongitude()
-        );
+            WatchlistEntity entity = new WatchlistEntity(
+                    locationResult.getCity(),
+                    locationResult.getCountry(),
+                    locationResult.getLatitude(),
+                    locationResult.getLongitude()
+            );
 
-        watchlistRepository.save(entity);
+            watchlistRepository.save(entity);
+            logger.info("Successfully added city: {} ({})", locationResult.getCity(), locationResult.getCountry());
+
+        } catch (Exception e) {
+            logger.error("Failed to add city: {}", city, e);
+            throw e;
+        }
 
         return getWatchlist();
     }
 
     public List<WeatherResponse> removeCity(String city) {
 
+        logger.info("Attempting to remove city: {}", city);
+
         watchlistRepository.findByCity(city)
-                .ifPresent(watchlistRepository::delete);
+                .ifPresentOrElse(
+                        entity -> {
+                            watchlistRepository.delete(entity);
+                            logger.info("Successfully removed city: {}", city);
+                        },
+                        () -> logger.warn("City {} not found for removal", city)
+                );
 
         return getWatchlist();
     }
 
     public List<WeatherResponse> refreshWeather() {
 
+        logger.info("Refreshing weather for all cities");
         return getWatchlist();
     }
 
     public List<WeatherResponse> clearWatchlist() {
 
+        logger.info("Clearing entire watchlist");
+        int count = (int) watchlistRepository.count();
         watchlistRepository.deleteAll();
+        logger.info("Cleared {} cities from watchlist", count);
 
         return getWatchlist();
     }
