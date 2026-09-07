@@ -4,6 +4,7 @@ import java.time.Instant;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.weatherwatchlist.backend.client.GeocodingApiClient;
@@ -32,6 +33,7 @@ public class WeatherService {
         this.weatherApiClient = weatherApiClient;
     }
 
+    @Cacheable(value = "weather", key = "#city.toLowerCase()")
     public WeatherResponse getWeather(String city) {
 
         logger.info("Searching for weather: {}", city);
