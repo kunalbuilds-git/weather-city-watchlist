@@ -14,7 +14,7 @@ Weather City Watchlist is a Spring Boot and React-based application that enables
 - Case-insensitive city lookups with optimized database queries
 - Standardized error responses with timestamps
 - Comprehensive application logging (INFO, DEBUG, WARN, ERROR levels)
-- Automatic timestamp management (createdAt, updatedAt)
+- Automatic timestamp management (`createdAt`, `updatedAt`)
 - Asynchronous weather data fetching
 - CORS-enabled REST API
 
@@ -40,84 +40,90 @@ Weather City Watchlist is a Spring Boot and React-based application that enables
 - Open-Meteo Geocoding API
 
 ## Project Architecture
-weather-city-watchlist/
-├── backend/ # Spring Boot application
-│ ├── src/main/java/com/weatherwatchlist/backend/
-│ │ ├── entity/ # JPA entity classes
-│ │ ├── repository/ # Spring Data repositories
-│ │ ├── service/ # Business logic layer
-│ │ ├── controller/ # REST API endpoints
-│ │ ├── client/ # External API clients
-│ │ ├── exception/ # Error handling
-│ │ ├── external/ # External API models
-│ │ └── model/ # Response DTOs
-│ ├── src/main/resources/
-│ │ └── application.properties
-│ └── pom.xml
-├── frontend/ # React application
-│ ├── src/
-│ │ ├── components/
-│ │ ├── pages/
-│ │ ├── services/ # API service layer
-│ │ ├── types/ # TypeScript interfaces
-│ │ └── hooks/
-│ └── package.json
-└── README.md
 
+```text
+weather-city-watchlist/
+├── backend/                  # Spring Boot application
+│   ├── src/main/java/com/weatherwatchlist/backend/
+│   │   ├── entity/           # JPA entity classes
+│   │   ├── repository/       # Spring Data repositories
+│   │   ├── service/          # Business logic layer
+│   │   ├── controller/       # REST API endpoints
+│   │   ├── client/           # External API clients
+│   │   ├── exception/        # Error handling
+│   │   ├── external/         # External API models
+│   │   └── model/            # Response DTOs
+│   ├── src/main/resources/
+│   │   └── application.properties
+│   └── pom.xml
+├── frontend/                 # React application
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── services/         # API service layer
+│   │   ├── types/            # TypeScript interfaces
+│   │   └── hooks/
+│   └── package.json
+└── README.md
+```
 
 ## Database Schema
 
 **WatchlistEntity Table:**
-- id (Long, Primary Key, Auto-generated)
-- city (String)
-- country (String)
-- latitude (Double)
-- longitude (Double)
-- createdAt (LocalDateTime, auto-set on insert)
-- updatedAt (LocalDateTime, auto-updated)
+- `id` (Long, Primary Key, Auto-generated)
+- `city` (String)
+- `country` (String)
+- `latitude` (Double)
+- `longitude` (Double)
+- `createdAt` (LocalDateTime, auto-set on insert)
+- `updatedAt` (LocalDateTime, auto-updated)
 
-Storage: H2 file-based database at `backend/data/weatherdb.mv.db`
+*Storage:* H2 file-based database at `backend/data/weatherdb.mv.db`
+
+---
 
 ## API Specification
 
 ### Watchlist Endpoints
 
-**GET** `/api/watchlist`
-- Retrieves all cities in the user's watchlist
-- Returns: Array of WeatherResponse objects
-- Response time: <100ms (cached results)
+- **`GET /api/watchlist`**
+  - Retrieves all cities in the user's watchlist
+  - **Returns:** Array of `WeatherResponse` objects
+  - **Response time:** <100ms (cached results)
 
-**POST** `/api/watchlist/add`
-- Parameters: `city` (String, required)
-- Adds a new city to the watchlist
-- Validates: No duplicates, non-empty city name
-- Returns: Updated watchlist
+- **`POST /api/watchlist/add`**
+  - **Parameters:** `city` (String, required)
+  - Adds a new city to the watchlist
+  - **Validates:** No duplicates, non-empty city name
+  - **Returns:** Updated watchlist
 
-**DELETE** `/api/watchlist/remove`
-- Parameters: `city` (String, required)
-- Removes specified city from watchlist
-- Returns: Updated watchlist
+- **`DELETE /api/watchlist/remove`**
+  - **Parameters:** `city` (String, required)
+  - Removes specified city from watchlist
+  - **Returns:** Updated watchlist
 
-**PUT** `/api/watchlist/refresh`
-- Refreshes weather data for all cities in watchlist
-- Returns: Updated watchlist with latest weather
+- **`PUT /api/watchlist/refresh`**
+  - Refreshes weather data for all cities in watchlist
+  - **Returns:** Updated watchlist with latest weather
 
-**DELETE** `/api/watchlist/clear`
-- Clears entire watchlist
-- Returns: Empty watchlist
+- **`DELETE /api/watchlist/clear`**
+  - Clears entire watchlist
+  - **Returns:** Empty watchlist
 
 ### Weather Search Endpoint
 
-**GET** `/api/weather`
-- Parameters: `city` (String, required)
-- Searches for any city worldwide
-- Uses Open-Meteo Geocoding API for location resolution
-- Caching: Responses cached by city name (case-insensitive)
-- Returns: Single WeatherResponse object
+- **`GET /api/weather`**
+  - **Parameters:** `city` (String, required)
+  - Searches for any city worldwide
+  - Uses Open-Meteo Geocoding API for location resolution
+  - **Caching:** Responses cached by city name (case-insensitive)
+  - **Returns:** Single `WeatherResponse` object
+
+---
 
 ## Response Format
 
-Success Response:
+**Success Response:**
 ```json
 {
   "id": "watchlist_1",
@@ -139,7 +145,7 @@ Success Response:
 }
 ```
 
-Error Response:
+**Error Response:**
 ```json
 {
   "status": 404,
@@ -149,48 +155,25 @@ Error Response:
 }
 ```
 
+---
+
 ## Performance Optimizations
 
-**Response Caching:**
-- Implemented via Spring Cache Abstraction (@Cacheable)
-- Cache key: lowercase city name
-- Reduces redundant API calls by 80%+ on repeated searches
+- **Response Caching:** Implemented via Spring Cache Abstraction (`@Cacheable`) keyed on lowercase city names, reducing redundant API calls by 80%+.
+- **Database Optimization:** Custom repository query (`findByCity()`) with case-insensitive search eliminates in-memory filtering.
+- **API Efficiency:** Stored coordinates in the database prevent redundant geocoding API lookups on repeated searches.
+- **Memory Management:** Stream-based processing for list operations and proper resource cleanup within exception handlers.
 
-**Database Optimization:**
-- Custom repository query: findByCity() with case-insensitive search
-- Eliminates in-memory filtering of entire dataset
-- Single database query vs. load-all-filter approach
-
-**API Efficiency:**
-- Coordinates stored in database eliminates redundant geocoding API calls
-- Single weather API call per city lookup (vs. geocoding + weather separately)
-
-**Memory Management:**
-- Lazy-loaded weather data
-- Stream-based processing for list operations
-- Proper resource cleanup in exception handlers
+---
 
 ## Logging Strategy
 
-**INFO Level:**
-- City addition/removal events
-- Successful API calls
-- Watchlist fetch operations
+- **INFO:** City addition/removal events, successful API calls, and watchlist fetch operations.
+- **DEBUG:** Coordinates retrieved from API, weather condition parsing, and cache hits/misses.
+- **WARN:** Duplicate city detection and city-not-found lookups.
+- **ERROR:** External API failures and exception details with stack traces.
 
-**DEBUG Level:**
-- Coordinates retrieved from API
-- Weather condition parsing
-- Cache hits/misses
-
-**WARN Level:**
-- Duplicate city detection
-- City not found in lookups
-
-**ERROR Level:**
-- API failures with stack traces
-- Exception details for debugging
-
-All logs include timestamps, service name, and contextual information.
+---
 
 ## Getting Started
 
@@ -202,39 +185,35 @@ All logs include timestamps, service name, and contextual information.
 
 ### Installation
 
-**Backend Setup:**
+1. **Backend Setup:**
+   ```bash
+   cd backend
+   ./mvnw clean install
+   ```
 
-```bash
-cd backend
-./mvnw clean install
-```
-
-**Frontend Setup:**
-
-```bash
-cd frontend
-npm install
-```
+2. **Frontend Setup:**
+   ```bash
+   cd frontend
+   npm install
+   ```
 
 ### Running the Application
 
-**Terminal 1 - Backend Server:**
+- **Terminal 1 (Backend Server):**
+  ```bash
+  cd backend
+  ./mvnw spring-boot:run
+  ```
+  *Runs on:* `http://localhost:8080`
 
-```bash
-cd backend
-./mvnw spring-boot:run
-```
+- **Terminal 2 (Frontend Development Server):**
+  ```bash
+  cd frontend
+  npm run dev
+  ```
+  *Runs on:* `http://localhost:5173`
 
-Runs on: `http://localhost:8080`
-
-**Terminal 2 - Frontend Development Server:**
-
-```bash
-cd frontend
-npm run dev
-```
-
-Runs on: `http://localhost:5173`
+---
 
 ## Configuration
 
@@ -248,9 +227,11 @@ spring.h2.console.enabled=true
 ```
 
 **Environment Variables** (for production):
-- DATABASE_URL (optional, overrides H2)
-- OPENMETEO_API_KEY (if API key required)
-- CACHE_TTL (cache time-to-live in minutes)
+- `DATABASE_URL` (optional, overrides H2)
+- `OPENMETEO_API_KEY` (if API key required)
+- `CACHE_TTL` (cache time-to-live in minutes)
+
+---
 
 ## Deployment
 
@@ -278,68 +259,53 @@ docker run -p 8080:8080 weather-watchlist:latest
    - Simple git-based deployment
    - Free tier available for testing
 
+---
+
 ## Testing
 
-Run unit tests:
-
+**Run unit tests:**
 ```bash
 cd backend
 ./mvnw test
 ```
 
-Manual API testing:
-
+**Manual API testing:**
 ```bash
 curl http://localhost:8080/api/weather?city=London
 curl -X POST http://localhost:8080/api/watchlist/add?city=Paris
 curl http://localhost:8080/api/watchlist
 ```
 
+---
+
 ## Architectural Decisions
 
-**Spring Data JPA:**
-- Provides abstraction over Hibernate
-- Type-safe queries with custom repository methods
-- Reduces boilerplate ORM code
+- **Spring Data JPA:** Provides abstraction over Hibernate with type-safe queries and reduced ORM boilerplate.
+- **H2 File-Based Database:** Requires no external setup for local development while providing persistent storage.
+- **Cache Abstraction Layer:** Decouples caching implementation to allow swapping to Redis without code changes.
+- **Custom Error Handling:** Provides standardized error responses with timestamps and mapped HTTP status codes.
 
-**H2 File-Based Database:**
-- No external database setup required
-- Persistent storage for development/testing
-- Easily upgradeable to PostgreSQL for production
+---
 
-**Cache Abstraction Layer:**
-- Decouples caching implementation
-- Can swap from simple to Redis without code changes
-- Reduces external API calls by 80%+
+## Future Enhancements & Known Limitations
 
-**Custom Error Handling:**
-- Standardized error response format
-- Timestamp tracking for debugging
-- HTTP status codes per error type
-
-## Future Enhancements
-
+**Future Enhancements:**
 - Multi-user authentication with JWT
-- Weather forecast integration (7-day, hourly)
-- Search history and analytics
-- Persistent user sessions
-- Weather alert notifications
-- Database pagination for large datasets
-- GraphQL API alternative
+- 7-day & hourly weather forecasts
+- Weather alert notifications & search history analytics
 - Rate limiting and request throttling
-- Comprehensive unit and integration tests
 
-## Known Limitations
+**Known Limitations:**
+- Single-user mode (no auth)
+- In-memory cache resets on application restart
+- H2 file locking during high-concurrency scenarios
 
-- Single-user (no authentication)
-- Cache is in-memory only (resets on restart)
-- H2 file locking in concurrent scenarios
-- No data export functionality
+---
 
 ## Contributors
 
-- Backend: Kunal Raghuvanshi
-- Frontend: Yoichi
+- **Backend:** Kunal Raghuvanshi
+- **Frontend:** Yoichi
 
 ## License
 
