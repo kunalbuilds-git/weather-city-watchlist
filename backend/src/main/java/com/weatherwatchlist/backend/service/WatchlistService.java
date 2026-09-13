@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.weatherwatchlist.backend.client.GeocodingApiClient;
@@ -47,6 +49,19 @@ public class WatchlistService {
         logger.info("Retrieved {} cities from watchlist", watchlist.size());
 
         return watchlist;
+    }
+
+    public Page<WeatherResponse> getWatchlistPaginated(Pageable pageable) {
+
+        logger.info("Fetching paginated watchlist: page={}, size={}", 
+                pageable.getPageNumber(), pageable.getPageSize());
+        
+        Page<WeatherResponse> page = watchlistRepository.findAllPaginated(pageable)
+                .map(this::toWeatherResponse);
+        
+        logger.info("Retrieved page with {} cities", page.getNumberOfElements());
+
+        return page;
     }
 
     public List<WeatherResponse> addCity(String city) {
