@@ -10,12 +10,14 @@ import org.springframework.stereotype.Service;
 import com.weatherwatchlist.backend.client.GeocodingApiClient;
 import com.weatherwatchlist.backend.client.GeocodingApiClient.LocationResult;
 import com.weatherwatchlist.backend.client.WeatherApiClient;
+import com.weatherwatchlist.backend.entity.SearchHistoryEntity;
 import com.weatherwatchlist.backend.exception.CityNotFoundException;
 import com.weatherwatchlist.backend.external.OpenMeteoResponse;
 import com.weatherwatchlist.backend.model.Location;
 import com.weatherwatchlist.backend.model.Temperature;
 import com.weatherwatchlist.backend.model.Weather;
 import com.weatherwatchlist.backend.model.WeatherResponse;
+import com.weatherwatchlist.backend.repository.SearchHistoryRepository;
 
 @Service
 public class WeatherService {
@@ -24,13 +26,16 @@ public class WeatherService {
 
     private final GeocodingApiClient geocodingApiClient;
     private final WeatherApiClient weatherApiClient;
+    private final SearchHistoryRepository searchHistoryRepository;
 
     public WeatherService(
             GeocodingApiClient geocodingApiClient,
-            WeatherApiClient weatherApiClient) {
+            WeatherApiClient weatherApiClient,
+            SearchHistoryRepository searchHistoryRepository) {
 
         this.geocodingApiClient = geocodingApiClient;
         this.weatherApiClient = weatherApiClient;
+        this.searchHistoryRepository = searchHistoryRepository;
     }
 
     @Cacheable(value = "weather", key = "#city.toLowerCase()")
@@ -45,6 +50,8 @@ public class WeatherService {
                     locationResult.getCountry(),
                     locationResult.getLatitude(),
                     locationResult.getLongitude());
+
+            saveSearchHistory(locationResult.getCity(), locationResult.getCountry());
 
             Weather weather = fetchWeather(
                     locationResult.getLatitude(),
@@ -67,6 +74,13 @@ public class WeatherService {
             logger.error("Failed to get weather for city: {}", city, e);
             throw new CityNotFoundException(city);
         }
+    }
+
+    private void saveSearchHistory(String city, String country) {
+
+        SearchHistoryEntity history = new SearchHistoryEntity(city, country);
+        searchHistoryRepository.save(history);
+        logger.debug("Saved search history: {}", city);
     }
 
     private Weather fetchWeather(double latitude, double longitude) {
