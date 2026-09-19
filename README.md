@@ -1,10 +1,12 @@
 # Weather City Watchlist
 
-A full-stack real-time weather tracking application featuring optimized API integration, persistent storage, and production-grade architecture.
+A full-stack real-time weather tracking application featuring optimized API integration, persistent storage, and a layered architecture.
+
+<!-- TODO: add a UI screenshot/GIF here once docs/demo.gif exists: ![Demo](docs/demo.gif) -->
 
 ## Overview
 
-Weather City Watchlist is a Spring Boot and React-based application that enables users to maintain a personalized watchlist of cities and track real-time weather conditions. The system demonstrates enterprise-level backend practices including JPA persistence, caching strategies, comprehensive error handling, and structured logging.
+Weather City Watchlist is a Spring Boot and React-based application that enables users to maintain a personalized watchlist of cities and track real-time weather conditions. The system demonstrates backend practices including JPA persistence, caching strategies, comprehensive error handling, and structured logging.
 
 ## Key Features
 
@@ -15,12 +17,15 @@ Weather City Watchlist is a Spring Boot and React-based application that enables
 - Standardized error responses with timestamps
 - Comprehensive application logging (INFO, DEBUG, WARN, ERROR levels)
 - Automatic timestamp management (`createdAt`, `updatedAt`)
+<!-- VERIFY: keep the next bullet only if the code really uses @Async / CompletableFuture / WebClient; otherwise delete it -->
 - Asynchronous weather data fetching
 - CORS-enabled REST API
+<!-- TODO: add a bullet for search history tracking (your latest commit) -->
 
 ## Technology Stack
 
 **Backend Architecture:**
+
 - Java 25 (OpenJDK Temurin)
 - Spring Boot 4.0.7
 - Spring Data JPA with Hibernate ORM
@@ -30,18 +35,20 @@ Weather City Watchlist is a Spring Boot and React-based application that enables
 - Spring Cache Abstraction
 
 **Frontend Stack:**
+
 - React 18+ with TypeScript
 - Vite 5.0+ (build tool)
 - Tailwind CSS (styling)
 - Axios (HTTP client)
 
 **External Services:**
+
 - Open-Meteo Weather API
 - Open-Meteo Geocoding API
 
 ## Project Architecture
 
-```text
+```
 weather-city-watchlist/
 ├── backend/                  # Spring Boot application
 │   ├── src/main/java/com/weatherwatchlist/backend/
@@ -70,6 +77,7 @@ weather-city-watchlist/
 ## Database Schema
 
 **WatchlistEntity Table:**
+
 - `id` (Long, Primary Key, Auto-generated)
 - `city` (String)
 - `country` (String)
@@ -87,43 +95,43 @@ weather-city-watchlist/
 ### Watchlist Endpoints
 
 - **`GET /api/watchlist`**
-  - Retrieves all cities in the user's watchlist
-  - **Returns:** Array of `WeatherResponse` objects
-  - **Response time:** <100ms (cached results)
+  * Retrieves all cities in the user's watchlist
+  * **Returns:** Array of `WeatherResponse` objects
 
 - **`POST /api/watchlist/add`**
-  - **Parameters:** `city` (String, required)
-  - Adds a new city to the watchlist
-  - **Validates:** No duplicates, non-empty city name
-  - **Returns:** Updated watchlist
+  * **Parameters:** `city` (String, required)
+  * Adds a new city to the watchlist
+  * **Validates:** No duplicates, non-empty city name
+  * **Returns:** Updated watchlist
 
 - **`DELETE /api/watchlist/remove`**
-  - **Parameters:** `city` (String, required)
-  - Removes specified city from watchlist
-  - **Returns:** Updated watchlist
+  * **Parameters:** `city` (String, required)
+  * Removes specified city from watchlist
+  * **Returns:** Updated watchlist
 
 - **`PUT /api/watchlist/refresh`**
-  - Refreshes weather data for all cities in watchlist
-  - **Returns:** Updated watchlist with latest weather
+  * Refreshes weather data for all cities in watchlist
+  * **Returns:** Updated watchlist with latest weather
 
 - **`DELETE /api/watchlist/clear`**
-  - Clears entire watchlist
-  - **Returns:** Empty watchlist
+  * Clears entire watchlist
+  * **Returns:** Empty watchlist
 
 ### Weather Search Endpoint
 
 - **`GET /api/weather`**
-  - **Parameters:** `city` (String, required)
-  - Searches for any city worldwide
-  - Uses Open-Meteo Geocoding API for location resolution
-  - **Caching:** Responses cached by city name (case-insensitive)
-  - **Returns:** Single `WeatherResponse` object
+  * **Parameters:** `city` (String, required)
+  * Searches for any city worldwide
+  * Uses Open-Meteo Geocoding API for location resolution
+  * **Caching:** Responses cached by city name (case-insensitive)
+  * **Returns:** Single `WeatherResponse` object
 
 ---
 
 ## Response Format
 
 **Success Response:**
+
 ```json
 {
   "id": "watchlist_1",
@@ -146,6 +154,7 @@ weather-city-watchlist/
 ```
 
 **Error Response:**
+
 ```json
 {
   "status": 404,
@@ -159,7 +168,7 @@ weather-city-watchlist/
 
 ## Performance Optimizations
 
-- **Response Caching:** Implemented via Spring Cache Abstraction (`@Cacheable`) keyed on lowercase city names, reducing redundant API calls by 80%+.
+- **Response Caching:** Implemented via Spring Cache Abstraction (`@Cacheable`) keyed on lowercase city names, avoiding repeated calls to the weather API for the same city.
 - **Database Optimization:** Custom repository query (`findByCity()`) with case-insensitive search eliminates in-memory filtering.
 - **API Efficiency:** Stored coordinates in the database prevent redundant geocoding API lookups on repeated searches.
 - **Memory Management:** Stream-based processing for list operations and proper resource cleanup within exception handlers.
@@ -186,31 +195,37 @@ weather-city-watchlist/
 ### Installation
 
 1. **Backend Setup:**
-   ```bash
-   cd backend
-   ./mvnw clean install
-   ```
+
+```
+cd backend
+./mvnw clean install
+```
 
 2. **Frontend Setup:**
-   ```bash
-   cd frontend
-   npm install
-   ```
+
+```
+cd frontend
+npm install
+```
 
 ### Running the Application
 
 - **Terminal 1 (Backend Server):**
-  ```bash
-  cd backend
-  ./mvnw spring-boot:run
-  ```
+
+```
+cd backend
+./mvnw spring-boot:run
+```
+
   *Runs on:* `http://localhost:8080`
 
 - **Terminal 2 (Frontend Development Server):**
-  ```bash
-  cd frontend
-  npm run dev
-  ```
+
+```
+cd frontend
+npm run dev
+```
+
   *Runs on:* `http://localhost:5173`
 
 ---
@@ -218,7 +233,8 @@ weather-city-watchlist/
 ## Configuration
 
 **Backend Configuration** (`application.properties`):
-```properties
+
+```
 spring.datasource.url=jdbc:h2:file:./data/weatherdb
 spring.jpa.hibernate.ddl-auto=update
 spring.cache.type=simple
@@ -226,51 +242,41 @@ spring.jpa.show-sql=true
 spring.h2.console.enabled=true
 ```
 
+<!-- VERIFY: search the code and application.properties for DATABASE_URL, OPENMETEO_API_KEY and CACHE_TTL. If nothing reads them, delete this whole "Environment Variables" block. (Open-Meteo's free tier needs no API key.) -->
 **Environment Variables** (for production):
+
 - `DATABASE_URL` (optional, overrides H2)
 - `OPENMETEO_API_KEY` (if API key required)
 - `CACHE_TTL` (cache time-to-live in minutes)
 
 ---
 
+<!-- VERIFY: keep this Docker block only if backend/Dockerfile exists; otherwise delete the whole "Deployment" section -->
 ## Deployment
 
 ### Docker Containerization
 
-```bash
+```
 cd backend
 docker build -t weather-watchlist:latest .
 docker run -p 8080:8080 weather-watchlist:latest
 ```
 
-### Cloud Deployment Options
-
-1. **Railway** (recommended for simplicity)
-   - Connect GitHub repository
-   - Auto-deploys on push
-   - Managed PostgreSQL available
-
-2. **AWS**
-   - Deploy as ECS task or Lambda
-   - RDS for production database
-   - CloudFront for frontend
-
-3. **Heroku/Vercel**
-   - Simple git-based deployment
-   - Free tier available for testing
-
 ---
 
 ## Testing
 
+<!-- VERIFY: run ./mvnw test and check backend/src/test. If there are no real tests, replace the next line with: "No automated tests yet (planned)." and keep the manual curl examples below -->
 **Run unit tests:**
-```bash
+
+```
 cd backend
 ./mvnw test
 ```
 
 **Manual API testing:**
-```bash
+
+```
 curl http://localhost:8080/api/weather?city=London
 curl -X POST http://localhost:8080/api/watchlist/add?city=Paris
 curl http://localhost:8080/api/watchlist
@@ -290,12 +296,15 @@ curl http://localhost:8080/api/watchlist
 ## Future Enhancements & Known Limitations
 
 **Future Enhancements:**
+
 - Multi-user authentication with JWT
 - 7-day & hourly weather forecasts
-- Weather alert notifications & search history analytics
+- Weather alert notifications & analytics on search history
 - Rate limiting and request throttling
+- Cloud deployment (e.g. Railway with managed PostgreSQL)
 
 **Known Limitations:**
+
 - Single-user mode (no auth)
 - In-memory cache resets on application restart
 - H2 file locking during high-concurrency scenarios
