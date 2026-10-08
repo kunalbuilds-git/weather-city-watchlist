@@ -1,68 +1,53 @@
-import { useEffect, useState } from "react";
+import WatchlistItem from "../components/WatchlistItem";
+import Loader from "../components/Loader";
+import ErrorMessage from "../components/ErrorMessage";
 import { useWatchlist } from "../hooks/useWatchlist";
-import { getWeatherByCity } from "../services/weatherService";
-import type { Weather } from "../types/Weather";
 
 export default function Watchlist() {
-  const { watchlist, loading: watchlistLoading, removeCity } = useWatchlist();
-  const [weatherList, setWeatherList] = useState<Weather[]>([]);
-  const [loadingWeather, setLoadingWeather] = useState(false);
+  const { watchlist, loading, busy, error, removeCity, refresh, clear } = useWatchlist();
 
-  // Load weather for each city in watchlist
-  useEffect(() => {
-    async function loadAllWeather() {
-      if (watchlist.length === 0) {
-        setWeatherList([]);
-        return;
-      }
-
-      setLoadingWeather(true);
-      const results: Weather[] = [];
-
-      for (const city of watchlist) {
-        try {
-          const data = await getWeatherByCity(city.location.city.trim().toLowerCase());
-          results.push(data);
-        } catch (error) {
-          console.error("Failed to fetch weather for:", city.location.city, error);
-        }
-      }
-
-      setWeatherList(results);
-      setLoadingWeather(false);
+  function handleClear() {
+    if (window.confirm("Remove all cities from your watchlist?")) {
+      clear();
     }
-
-    loadAllWeather();
-  }, [watchlist]);
+  }
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md space-y-4">
-      <h2 className="text-2xl font-bold">Your Watchlist</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold">Your Watchlist</h2>
 
-      {watchlistLoading && <p>Loading watchlist...</p>}
-      {loadingWeather && <p>Loading weather...</p>}
-
-      {!watchlistLoading && weatherList.length === 0 && (
-        <p className="text-gray-600">No cities added yet.</p>
-      )}
-
-      {weatherList.map((weather) => (
-        <div
-          key={weather.city}
-          className="flex justify-between items-center p-3 border rounded-md"
-        >
-          <span>
-            {weather.city}, {weather.country} — {weather.temperature}°C
-          </span>
+        <div className="flex gap-2">
+          <button
+            onClick={refresh}
+            disabled={busy || loading || watchlist.length === 0}
+            className="px-3 py-1 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
+          >
+            {busy ? "Working..." : "Refresh"}
+          </button>
 
           <button
-            onClick={() => removeCity(weather.city)}
-            className="text-red-600 hover:text-red-800"
+            onClick={handleClear}
+            disabled={busy || loading || watchlist.length === 0}
+            className="px-3 py-1 rounded-md bg-gray-200 text-gray-800 hover:bg-gray-300 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Remove
+            Clear all
           </button>
         </div>
-      ))}
+      </div>
+
+      {error && <ErrorMessage message={error} />}
+      {loading && <Loader label="Loading watchlist..." />}
+
+      {!loading && !error && watchlist.length === 0 && (
+        <p className="text-gray-600">No cities added yet. Search for a city on the Home page to add one.</p>
+      )}
+
+      <div className="space-y-3">
+        {watchlist.map((weather) => (
+          <WatchlistItem key={weather.id} weather={weather} disabled={busy} onRemove={removeCity} />
+        ))}
+      </div>
     </div>
   );
 }

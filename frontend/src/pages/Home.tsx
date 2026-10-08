@@ -1,123 +1,57 @@
-import React, { useState } from 'react';
-
-import CityCard from '../components/CityCard';
-import WeatherDetails from '../components/WeatherDetails';
-
-import { getWeatherByCity } from '../services/weatherService';
-import type { Weather } from '../types/Weather';
-import { useWatchlist } from '../hooks/useWatchlist';
+import CityCard from "../components/CityCard";
+import WeatherDetails from "../components/WeatherDetails";
+import SearchBar from "../components/SearchBar";
+import RecentSearches from "../components/RecentSearches";
+import Loader from "../components/Loader";
+import ErrorMessage from "../components/ErrorMessage";
+import { useWeather } from "../hooks/useWeather";
+import { useWatchlist } from "../hooks/useWatchlist";
+import { useSearchHistory } from "../hooks/useSearchHistory";
 
 export default function Home() {
+  const { weather, loading, error, fetchWeather, resetWeather } = useWeather();
+  const { addCity, busy, isInWatchlist, error: watchlistError } = useWatchlist();
+  const { history, reload: reloadHistory } = useSearchHistory();
 
-    const [weather, setWeather] = useState<Weather>({
-        city: "",
-        country: "",
-        temperature: 0,
-        condition: "",
-        humidity: 0,
-        windSpeed: 0,
-        windUnit: "",
-        updatedAt: ""
-    });
+  async function handleSearch(city: string) {
+    await fetchWeather(city);
+    await reloadHistory();
+  }
 
-    const [cityInput, setCityInput] = useState("");
-    const { addCity } = useWatchlist();
+  const alreadySaved = weather ? isInWatchlist(weather.city) : false;
 
-    const inputHandleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setCityInput(e.target.value);
-    };
+  return (
+    <div className="flex flex-col items-center py-6">
+      <h1 className="text-3xl font-bold mb-8 text-center">Weather Overview</h1>
 
-    const handleSearch = async () => {
-        const trimmedCity = cityInput.trim();
+      <div className="w-full max-w-xl bg-white shadow-md rounded-lg p-6 space-y-6">
+        <SearchBar loading={loading} onSearch={handleSearch} onReset={resetWeather} />
 
-        if (!trimmedCity) {
-            return;
-        }
+        <RecentSearches items={history} onSelect={handleSearch} />
 
-        const data = await getWeatherByCity(trimmedCity);
-        setWeather(data);
-    };
+        {loading && <Loader label="Fetching weather..." />}
+        {error && <ErrorMessage message={error} />}
+        {watchlistError && <ErrorMessage message={watchlistError} />}
 
-    const handleReset = () => {
-        setWeather({
-            city: "",
-            country: "",
-            temperature: 0,
-            condition: "",
-            humidity: 0,
-            windSpeed: 0,
-            windUnit: "",
-            updatedAt: ""
-        });
+        {!loading && weather && (
+          <>
+            <CityCard weather={weather} />
+            <WeatherDetails weather={weather} />
 
-        setCityInput("");
-    };
+            <button
+              onClick={() => addCity(weather.city)}
+              disabled={alreadySaved || busy}
+              className="w-full py-2 rounded-md transition bg-green-600 text-white hover:bg-green-700 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
+            >
+              {alreadySaved ? "Already in watchlist" : busy ? "Adding..." : "Add to Watchlist"}
+            </button>
+          </>
+        )}
 
-    return (
-        <div className="min-h-screen bg-gray-100 flex flex-col items-center py-10 px-4">
-
-            <h1 className="text-3xl font-bold mb-8 text-center">
-                Weather Overview
-            </h1>
-
-            <div className="w-full max-w-xl bg-white shadow-md rounded-lg p-6 space-y-6">
-
-                <CityCard
-                    city={weather.city}
-                    country={weather.country}
-                    temperature={weather.temperature}
-                    condition={weather.condition}
-                />
-
-                <WeatherDetails
-                    humidity={weather.humidity}
-                    windSpeed={weather.windSpeed}
-                    windUnit={weather.windUnit}
-                    updatedAt={weather.updatedAt}
-                />
-
-                <div className="space-y-4">
-                    <input
-                        type="text"
-                        value={cityInput}
-                        onChange={inputHandleChange}
-                        placeholder="Enter city name"
-                        className="w-full px-4 py-2 border rounded-md shadow-sm 
-                                    focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-
-                    <div className="flex gap-4">
-                        <button
-                            onClick={handleSearch}
-                            className="flex-1 bg-blue-600 text-white py-2 rounded-md 
-                                    hover:bg-blue-700 transition"
-                        >
-                            Search
-                        </button>
-
-                        <button
-                            onClick={handleReset}
-                            className="flex-1 bg-gray-300 text-gray-800 py-2 rounded-md
-                                     hover:bg-gray-400 transition"
-                        >
-                            Reset
-                        </button>
-
-                        <button
-                            disabled={!weather.city}
-                            onClick={() => addCity(weather.city)}
-                            className={`flex-1 py-2 rounded-md transition 
-                                ${weather.city
-                                ? "bg-green-600 text-white hover:bg-green-700"
-                                : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                }`}
-                        >
-                            Add to Watchlist
-                        </button>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    );
+        {!loading && !weather && !error && (
+          <p className="text-gray-500 text-center">Search for a city to see its current weather.</p>
+        )}
+      </div>
+    </div>
+  );
 }

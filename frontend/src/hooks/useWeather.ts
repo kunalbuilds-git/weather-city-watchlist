@@ -8,29 +8,22 @@ export function useWeather() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchWeather = useCallback(async (city: string) => {
+    setLoading(true);
+    setError(null);
     try {
-      setLoading(true);
-      setError(null);
-
-      const data = await getWeatherByCity(city.trim().toLowerCase());
-      setWeather(data);
+      setWeather(await getWeatherByCity(city));
     } catch (err: unknown) {
+      setWeather(null);
       setError(err instanceof Error ? err.message : "Failed to fetch weather");
     } finally {
       setLoading(false);
     }
   }, []);
 
-  function resetWeather() {
+  const resetWeather = useCallback(() => {
     setWeather(null);
     setError(null);
-  }
+  }, []);
 
-  return {
-    weather,
-    loading,
-    error,
-    fetchWeather,
-    resetWeather,
-  };
+  return { weather, loading, error, fetchWeather, resetWeather };
 }

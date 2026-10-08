@@ -1,29 +1,22 @@
-import { weatherIcons } from "../utils/weatherIcons";
+import type { Weather } from "../types/Weather";
+import { getWeatherIcon } from "../utils/weatherIcons";
+import { formatTemperature } from "../utils/formatTemperature";
 
-interface CityCardProps {
-  city: string;
-  country: string;
-  temperature: number;
-  condition: string;
-}
-
-export default function CityCard({ city, country, temperature, condition }: CityCardProps) {
-  const icon = weatherIcons[condition.toLowerCase()] || "❓";
-
+export default function CityCard({ weather }: { weather: Weather }) {
   return (
     <div className="bg-blue-50 p-4 rounded-md shadow-sm">
       <h2 className="text-xl font-semibold mb-2 flex items-center gap-2">
-        {city}
-        {country ? `, ${country}` : ""}
-        <span className="text-3xl">{icon}</span>
+        {weather.city}, {weather.country}
+        <span className="text-3xl">{getWeatherIcon(weather.condition)}</span>
       </h2>
 
       <p className="text-gray-700">
-        <span className="font-medium">Temperature:</span> {temperature}°C
+        <span className="font-medium">Temperature:</span>{" "}
+        {formatTemperature(weather.temperature, weather.temperatureUnit)}
       </p>
 
       <p className="text-gray-700">
-        <span className="font-medium">Condition:</span> {condition}
+        <span className="font-medium">Condition:</span> {weather.condition}
       </p>
     </div>
   );

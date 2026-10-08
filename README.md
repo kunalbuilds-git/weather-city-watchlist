@@ -9,8 +9,10 @@ The project allows users to search for cities, view live weather data, and maint
 ### Frontend
 - React
 - TypeScript
+- React Router
 - Tailwind CSS
 - Vite
+- Fetch API
 
 ### Backend
 - Java
