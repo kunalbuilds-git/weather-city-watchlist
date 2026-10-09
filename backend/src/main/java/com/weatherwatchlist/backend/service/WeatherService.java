@@ -1,66 +1,135 @@
 package com.weatherwatchlist.backend.service;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.time.Instant;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import com.weatherwatchlist.backend.client.GeocodingApiClient;
+import com.weatherwatchlist.backend.client.GeocodingApiClient.LocationResult;
+import com.weatherwatchlist.backend.client.WeatherApiClient;
+import com.weatherwatchlist.backend.entity.SearchHistoryEntity;
 import com.weatherwatchlist.backend.exception.CityNotFoundException;
+import com.weatherwatchlist.backend.external.OpenMeteoResponse;
 import com.weatherwatchlist.backend.model.Location;
 import com.weatherwatchlist.backend.model.Temperature;
 import com.weatherwatchlist.backend.model.Weather;
 import com.weatherwatchlist.backend.model.WeatherResponse;
+import com.weatherwatchlist.backend.repository.SearchHistoryRepository;
 
 @Service
 public class WeatherService {
 
-    private final Map<String, WeatherResponse> weatherData = new HashMap<>();
+    private static final Logger logger = LoggerFactory.getLogger(WeatherService.class);
 
-    public WeatherService() {
+    private final GeocodingApiClient geocodingApiClient;
+    private final WeatherApiClient weatherApiClient;
+    private final SearchHistoryRepository searchHistoryRepository;
 
-        // Tokyo
-        weatherData.put(
-                "tokyo",
-                new WeatherResponse(
-                        "city_001",
-                        new Location("Tokyo", "Japan"),
-                        new Weather(
-                                new Temperature(30, "C"),
-                                "Cloudy",
-                                68,
-                                10.5,
-                                "km/h"
-                        ),
-                        "2026-08-05T10:00:00Z"
-                )
+    public WeatherService(
+            GeocodingApiClient geocodingApiClient,
+            WeatherApiClient weatherApiClient,
+            SearchHistoryRepository searchHistoryRepository) {
+
+        this.geocodingApiClient = geocodingApiClient;
+        this.weatherApiClient = weatherApiClient;
+        this.searchHistoryRepository = searchHistoryRepository;
+    }
+
+    @Cacheable(value = "weather", key = "#city.toLowerCase()")
+    public WeatherResponse getWeather(String city) {
+
+        logger.info("Searching for weather: {}", city);
+
+        try {
+            LocationResult locationResult = geocodingApiClient.findCity(city);
+            logger.debug("Found location: {} ({}) at {}, {}", 
+                    locationResult.getCity(), 
+                    locationResult.getCountry(),
+                    locationResult.getLatitude(),
+                    locationResult.getLongitude());
+
+            saveSearchHistory(locationResult.getCity(), locationResult.getCountry());
+
+            Weather weather = fetchWeather(
+                    locationResult.getLatitude(),
+                    locationResult.getLongitude()
+            );
+
+            logger.info("Successfully retrieved weather for: {}", city);
+
+            return new WeatherResponse(
+                    "search_" + city.toLowerCase(),
+                    new Location(
+                            locationResult.getCity(),
+                            locationResult.getCountry()
+                    ),
+                    weather,
+                    Instant.now().toString()
+            );
+
+        } catch (Exception e) {
+            logger.error("Failed to get weather for city: {}", city, e);
+            throw new CityNotFoundException(city);
+        }
+    }
+
+    private void saveSearchHistory(String city, String country) {
+
+        SearchHistoryEntity history = new SearchHistoryEntity(city, country);
+        searchHistoryRepository.save(history);
+        logger.debug("Saved search history: {}", city);
+    }
+
+    private Weather fetchWeather(double latitude, double longitude) {
+
+        OpenMeteoResponse weatherResult = weatherApiClient.getWeather(
+                latitude,
+                longitude
         );
 
-        // Paris
-        weatherData.put(
-                "paris",
-                new WeatherResponse(
-                        "city_002",
-                        new Location("Paris", "France"),
-                        new Weather(
-                                new Temperature(21, "C"),
-                                "Rainy",
-                                80,
-                                18.2,
-                                "km/h"
-                        ),
-                        "2026-08-05T10:00:00Z"
-                )
+        OpenMeteoResponse.Current current = weatherResult.getCurrent();
+
+        return new Weather(
+                new Temperature(
+                        (int) Math.round(current.getTemperature()),
+                        "C"
+                ),
+                getWeatherCondition(current.getWeatherCode()),
+                current.getHumidity(),
+                current.getWindSpeed(),
+                "km/h"
         );
     }
 
-    public WeatherResponse getWeather(String city) {
+    private String getWeatherCondition(int weatherCode) {
 
-        WeatherResponse response = weatherData.get(city.toLowerCase());
-
-        if (response == null) {
-            throw new CityNotFoundException(city);
+        if (weatherCode == 0) {
+            return "Clear";
         }
 
-        return response;
+        if (weatherCode >= 1 && weatherCode <= 3) {
+            return "Cloudy";
+        }
+
+        if (weatherCode >= 51 && weatherCode <= 67) {
+            return "Rainy";
+        }
+
+        if (weatherCode >= 71 && weatherCode <= 77) {
+            return "Snowy";
+        }
+
+        if (weatherCode >= 80 && weatherCode <= 82) {
+            return "Rainy";
+        }
+
+        if (weatherCode >= 95) {
+            return "Thunderstorm";
+        }
+
+        return "Unknown";
     }
 }
