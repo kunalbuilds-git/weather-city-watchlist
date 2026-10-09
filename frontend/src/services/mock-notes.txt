@@ -1,3 +1,0 @@
-Copying the sample response from the backend to use for the frontend
-As a mock response for development purposes 
-This file will be removed before production deployment

@@ -50,28 +50,28 @@ Weather City Watchlist is a Spring Boot and React-based application that enables
 
 ```
 weather-city-watchlist/
-├── backend/                  # Spring Boot application
-│   ├── src/main/java/com/weatherwatchlist/backend/
-│   │   ├── entity/           # JPA entity classes
-│   │   ├── repository/       # Spring Data repositories
-│   │   ├── service/          # Business logic layer
-│   │   ├── controller/       # REST API endpoints
-│   │   ├── client/           # External API clients
-│   │   ├── exception/        # Error handling
-│   │   ├── external/         # External API models
-│   │   └── model/            # Response DTOs
-│   ├── src/main/resources/
-│   │   └── application.properties
-│   └── pom.xml
-├── frontend/                 # React application
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── services/         # API service layer
-│   │   ├── types/            # TypeScript interfaces
-│   │   └── hooks/
-│   └── package.json
-└── README.md
+Γö£ΓöÇΓöÇ backend/                  # Spring Boot application
+Γöé   Γö£ΓöÇΓöÇ src/main/java/com/weatherwatchlist/backend/
+Γöé   Γöé   Γö£ΓöÇΓöÇ entity/           # JPA entity classes
+Γöé   Γöé   Γö£ΓöÇΓöÇ repository/       # Spring Data repositories
+Γöé   Γöé   Γö£ΓöÇΓöÇ service/          # Business logic layer
+Γöé   Γöé   Γö£ΓöÇΓöÇ controller/       # REST API endpoints
+Γöé   Γöé   Γö£ΓöÇΓöÇ client/           # External API clients
+Γöé   Γöé   Γö£ΓöÇΓöÇ exception/        # Error handling
+Γöé   Γöé   Γö£ΓöÇΓöÇ external/         # External API models
+Γöé   Γöé   ΓööΓöÇΓöÇ model/            # Response DTOs
+Γöé   Γö£ΓöÇΓöÇ src/main/resources/
+Γöé   Γöé   ΓööΓöÇΓöÇ application.properties
+Γöé   ΓööΓöÇΓöÇ pom.xml
+Γö£ΓöÇΓöÇ frontend/                 # React application
+Γöé   Γö£ΓöÇΓöÇ src/
+Γöé   Γöé   Γö£ΓöÇΓöÇ components/
+Γöé   Γöé   Γö£ΓöÇΓöÇ pages/
+Γöé   Γöé   Γö£ΓöÇΓöÇ services/         # API service layer
+Γöé   Γöé   Γö£ΓöÇΓöÇ types/            # TypeScript interfaces
+Γöé   Γöé   ΓööΓöÇΓöÇ hooks/
+Γöé   ΓööΓöÇΓöÇ package.json
+ΓööΓöÇΓöÇ README.md
 ```
 
 ## Database Schema
@@ -319,3 +319,11 @@ curl http://localhost:8080/api/watchlist
 ## License
 
 MIT
+
+### Frontend
+- React
+- TypeScript
+- React Router
+- Tailwind CSS
+- Vite
+- Fetch API

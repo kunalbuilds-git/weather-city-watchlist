@@ -1,31 +1,13 @@
+// Keys are lowercase versions of the conditions the backend returns
 export const weatherIcons: Record<string, string> = {
-  sunny: "☀️",
   clear: "☀️",
-  "clear sky": "☀️",
-
   cloudy: "☁️",
-  overcast: "☁️",
-  "partly cloudy": "⛅",
-
-  rain: "🌧️",
-  drizzle: "🌦️",
-  "light rain": "🌦️",
-  "heavy rain": "🌧️",
-
+  rainy: "🌧️",
+  snowy: "❄️",
   thunderstorm: "⛈️",
-  storm: "🌩️",
-
-  snow: "❄️",
-  "light snow": "🌨️",
-
-  fog: "🌫️",
-  mist: "🌫️",
-
-  windy: "🌪️",
+  unknown: "🌡️",
 };
 
-// Returns the correct icon or a fallback
 export function getWeatherIcon(condition: string): string {
-  const key = condition.toLowerCase();
-  return weatherIcons[key] || "❓";
+  return weatherIcons[condition.toLowerCase()] ?? "🌡️";
 }

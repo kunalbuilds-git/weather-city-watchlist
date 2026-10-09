@@ -3,6 +3,7 @@ import Layout from "./Layout/Layout";
 import Home from "./pages/Home";
 import Watchlist from "./pages/Watchlist";
 import CityDetails from "./pages/CityDetails";
+import NotFound from "./pages/NotFound";
 
 export default function App() {
   return (
@@ -11,7 +12,8 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/watchlist" element={<Watchlist />} />
-          <Route path="/city-details" element={<CityDetails />} />
+          <Route path="/city/:city" element={<CityDetails />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Layout>
     </BrowserRouter>

@@ -1,32 +1,24 @@
-/* This file communicates with the backend WatchlistController
-providing functions to GET, ADD and REMOVE cities from the watchlist
-stored in the backend's in-memory HashMap */
+import type { WeatherResponseDto } from "../types/api";
+import type { Weather } from "../types/Weather";
+import { mapWeather } from "../utils/mapWeather";
+import { request } from "./apiClient";
 
-const BASE_URL = "http://localhost:8080/api/watchlist";
+const BASE = "/api/watchlist";
 
-export async function getWatchlist() {
-    // GET /api/watchlist
-    const response = await fetch(`${BASE_URL}`);
-    if (!response.ok) throw new Error("Failed to load watchlist");
-    return await response.json();
+// Every watchlist endpoint returns the full, updated list (with weather included)
+async function requestList(path: string, method = "GET"): Promise<Weather[]> {
+  const data = await request<WeatherResponseDto[]>(path, { method });
+  return data.map(mapWeather);
 }
 
-export async function addCityToWatchlist(city: string) {
-    // POST /api/watchlist/add?city=Tokyo
-    const response = await fetch(`${BASE_URL}/add?city=${encodeURIComponent(city)}`, {
-        method: "POST",
-    })
-    
-    if (!response.ok) throw new Error("Failed to add city");
-    return await response.json();
-}
+export const getWatchlist = () => requestList(BASE);
 
-export async function removeCityFromWatchlist(city: string) {
-    // DELETE /api/watchlist/remove?city=Tokyo
-    const response = await fetch(`${BASE_URL}/remove?city=${encodeURIComponent(city)}`, {
-        method: "DELETE",
-    })
+export const addCityToWatchlist = (city: string) =>
+  requestList(`${BASE}/add?city=${encodeURIComponent(city)}`, "POST");
 
-    if (!response.ok) throw new Error("Failed to remove city");
-    return await response.json();
-}
+export const removeCityFromWatchlist = (city: string) =>
+  requestList(`${BASE}/remove?city=${encodeURIComponent(city)}`, "DELETE");
+
+export const refreshWatchlist = () => requestList(`${BASE}/refresh`, "PUT");
+
+export const clearWatchlist = () => requestList(`${BASE}/clear`, "DELETE");

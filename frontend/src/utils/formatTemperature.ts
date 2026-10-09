@@ -1,3 +1,3 @@
-export function formatTemperature(value: number): string {
-    return `${value}°C`;
+export function formatTemperature(value: number, unit = "C"): string {
+  return `${value}°${unit}`;
 }
