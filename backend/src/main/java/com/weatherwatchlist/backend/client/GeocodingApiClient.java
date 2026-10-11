@@ -1,6 +1,8 @@
-package com.weatherwatchlist.backend.client;
+﻿package com.weatherwatchlist.backend.client;
 
 import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -24,7 +26,7 @@ public class GeocodingApiClient {
     public LocationResult findCity(String city) {
 
         String url = "https://geocoding-api.open-meteo.com/v1/search"
-                + "?name=" + city
+                + "?name=" + URLEncoder.encode(city, StandardCharsets.UTF_8)
                 + "&count=1"
                 + "&language=en"
                 + "&format=json";
